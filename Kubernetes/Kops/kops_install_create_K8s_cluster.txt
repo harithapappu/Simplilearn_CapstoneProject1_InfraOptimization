@@ -1,0 +1,76 @@
+Step1: Create the “kops” AWS IAM user
+-------------------------------------
+Create an IAM user called “kops” with required permissions by running the below commands:
+
+aws iam create-group --group-name kops
+
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonRoute53FullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/IAMFullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonVPCFullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonSQSFullAccess --group-name kops
+aws iam attach-group-policy --policy-arn arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess --group-name kops
+
+aws iam create-user --user-name kops
+aws iam add-user-to-group --user-name kops --group-name kops
+aws iam create-access-key --user-name kops
+
+Record the SecretAccessKey and AccessKeyID values in the output of the previous command (aws iam create-access-key --user-name kops), and then use them in the commands below:
+Username: "kops"
+AccessKeyID = "<<AWS-ACCESS-KEY>>"
+SecretAccessKey = "<<AWS-SECRET-ACCESS-KEY>>"
+
+# configure the AWS CLI to use ‘kops’ user
+aws configure       # use the new access and secret key  
+aws iam list-users  # you should see a list of all your IAM users here  
+
+#Export the following variables for a session: 
+export AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)  
+export AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key)
+
+Step 2: Configure DNS setup
+---------------------------
+Next, create a hosted zone in AWS for your kops subdomain:
+#install jq locally before running the below command
+aws route53 create-hosted-zone --name kops.yourdomain.com --caller-reference $(uuidgen) | jq .DelegationSet.NameServers
+Record the nameservers (NS entries) from the above command output.
+Next, you need to add these NS records for the subdomain in the DNS setting of the main domain. Exactly how you need to add the subdomain will vary depending on your domain registrar. 
+
+Step 3: Create cluster state storage
+------------------------------------
+kOps stores its configurations, keys, and related items, in an S3 bucket to manage Kubernetes clusters. You need to create a dedicated S3 bucket for this purpose. Run the below command to create an S3 bucket named “kops-state-storage-cluster2”:
+
+aws s3api create-bucket \
+    --bucket kops-state-storage-cluster2 \
+    --region us-east-1 
+
+Step 4: Install Kops
+---------------------
+curl -Lo kops https://github.com/kubernetes/kops/releases/download/v1.22.2/kops-linux-amd64
+chmod +x kops
+sudo mv kops /usr/local/bin/kops
+
+Step 5: Create Kubernetes Cluster
+---------------------------------
+The next step is to create the Kubernetes cluster. Set up the name and point to the S3 bucket so that kOps can be aware of it.
+export NAME=kops.yourdomain.com
+export KOPS_STATE_STORE=s3://kops-state-storage-cluster2
+
+Then, create the Kubernetes cluster in the “ap-south-1” region and under the “ap-south-1a” zone.
+kops create cluster \
+    --zones=us-east-1a \
+    --name ${NAME}
+
+Verify you see your cluster listed with this command:
+----------------------------------------------------
+kops get cluster -–name=kops.yourdomain.com
+
+Now, create the Kubernetes cluster with this command:
+----------------------------------------------------
+kops update cluster --name=kops.yourdomain.com --yes --admin
+
+
+
+    
+

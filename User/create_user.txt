@@ -1,0 +1,26 @@
+Create a namespace company for a role developer and associate the user 
+----------------------------------------------------------------------
+kubectl create ns company
+kubectl create role developer --verb=create --verb=get --verb=list --verb=update --verb=delete --resource=pods -n company
+kubectl create rolebinding developer-binding-haritha --role=developer --user=<<username>> -n company
+kubectl get roles -n company
+
+kubectl describe clusterrole admin
+kubectl get clusterroles
+kubectl get clusterrolebindings
+kubectl get clusterrole cluster-admin -o yaml
+
+kubectl create clusterrole nodes-admin --verb=get,list,watch,create,delete --resource=nodes
+kubectl create clusterrolebinding nodes-admin-binding-haritha --clusterrole=nodes-admin --user=haritha
+
+User creation for permissions to create, list, get, update, and delete pods-
+--------------------------------------------------------------------------
+kubectl create clusterrole pods-admin-role --verb=get,list,watch,create,delete --resource=pods
+
+kubectl create clusterrolebinding pods-admin-role-binding-haritha --clusterrole=pods-admin --user=haritha
+kubectl auth can-i get pods --as=haritha
+kubectl auth can-i list pods --as=haritha
+kubectl auth can-i create pods --as=haritha
+kubectl auth can-i delete pods --as=haritha
+kubectl auth can-i update pods --as=haritha
+kubectl auth can-i watch pods --as=haritha

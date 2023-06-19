@@ -1,0 +1,26 @@
+Install the Dependencies
+------------------------
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+
+Add the Docker Repository to CentOS
+-----------------------------------
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+Install Docker
+--------------
+sudo yum install docker
+
+Manage Docker Service
+---------------------
+sudo systemctl start docker
+sudo systemctl enable docker
+
+Check the status of the service
+-------------------------------
+sudo systemctl status docker
+
+Check docker installation
+-------------------------
+docker version

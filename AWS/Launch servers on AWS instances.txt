@@ -1,0 +1,10 @@
+Launch 4 servers on AWS LBInstance1, LBInstance2, LBInstance3 and LBInstance4 
+Below is the script to add in the user data to create the websites.
+#!/bin/bash
+# Use this for your user data (script from top to bottom)
+# install httpd (Linux 2 version)
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html

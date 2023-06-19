@@ -1,0 +1,2 @@
+kubectl create deployment auto-regul --image=nginx --replicas=2
+kubectl autoscale deployment auto-regul --cpu-percent=50 --min=1 --max=10

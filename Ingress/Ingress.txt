@@ -1,0 +1,16 @@
+Connect to the master node-
+Run the below commands:
+-------------------------
+Kubernetes Ingress traffic controllers-
+----------------------------------------
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/baremetal/deploy.yaml
+
+Get all ingress-nginx-
+---------------------
+kubectl get all -n ingress-nginx
+
+kubectl apply -f ingress-deployment.yml
+
+kubectl expose deployment cart --name cart --port 80
+kubectl expose deployment orders --name orders --port 80 --target-port 8080
+kubectl expose deployment orders --name orders --port 80 --target-port 8080

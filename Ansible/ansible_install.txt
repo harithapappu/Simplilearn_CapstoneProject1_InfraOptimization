@@ -1,0 +1,12 @@
+Install the dependencies
+	[root@ansibleserver ~]# yum install git python python-devel python-pip openssl ansible
+sudo pip install ansible
+
+ansible –-version
+
+cd /etc/ansible
+mkdir AWS_CLOUD
+cd AWS_CLOUD
+
+In order for the EC2 module to run from the Ansible playbook, install Boto3.It is the Amazon Web Services(AWS) SDK for Python. It enables python developers to create,configure,and manage AWS services such as EC2 and S3.
+sudo pip install boto boto3
